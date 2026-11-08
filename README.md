@@ -1,4 +1,4 @@
-# Akogen Cosmetics
+# akogen Cosmetics
 
 Minecraft **1.21.11** için Fabric istemci modu.
 
