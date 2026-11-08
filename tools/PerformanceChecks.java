@@ -1,0 +1,7 @@
+package akogen.fabric.v6;
+import java.nio.file.*;import java.util.*;
+public class PerformanceChecks {
+ static volatile double checksum;
+ static double run(List<Models.Model> models,int frames){long start=System.nanoTime();double sum=0;Expr.Context c=new Expr.Context();c.speed=-3;c.forward=-2;c.limbSpeed=.4;for(int frame=0;frame<frames;frame++){c.time=frame/60d;c.limbPos=frame*.2;for(Models.Model m:models){m.activeAnimations=Models.active(m,c,true);Map<String,Models.Mat> done=new HashMap<String,Models.Mat>();for(Models.Bone b:m.bones){Models.Mat pose=Models.pose(m,b,c,true,done,12,8);sum+=pose.m[12]+pose.m[5];}}}checksum=sum;return (System.nanoTime()-start)/1e6/frames;}
+ public static void main(String[] args)throws Exception{Assets.load(Files.readAllBytes(Paths.get(args[0])));List<Models.Model> models=new ArrayList<Models.Model>();for(Assets.Entry e:Assets.entries)models.add(Models.load(e));for(int i=0;i<3;i++)run(models,60);double[] times=new double[5];com.sun.management.ThreadMXBean bean=(com.sun.management.ThreadMXBean)java.lang.management.ManagementFactory.getThreadMXBean();long tid=Thread.currentThread().getId(),before=bean.getThreadAllocatedBytes(tid);for(int i=0;i<times.length;i++)times[i]=run(models,120);long bytes=bean.getThreadAllocatedBytes(tid)-before;Arrays.sort(times);System.out.printf(java.util.Locale.ROOT,"POSE_BENCH median_ms=%.3f allocation_kb_per_frame=%.1f checksum=%.9f models=%d%n",times[2],bytes/600d/1024,checksum,models.size());}
+}

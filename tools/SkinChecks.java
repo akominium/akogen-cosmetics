@@ -1,0 +1,9 @@
+package akogen.fabric.v6;
+import java.nio.file.*;import java.util.*;
+public final class SkinChecks {
+ static void require(boolean value,String message){if(!value)throw new AssertionError(message);}
+ static double gap(double[] a,double[] b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])+Math.abs(a[2]-b[2]);}
+ public static void main(String[]args)throws Exception{Assets.load(Files.readAllBytes(Paths.get(args[0])));String[] expected={"narlidere","H7ds","Juqii","Dabbe42","Emirhaniko","LimonrstX","Opsdwe","Xpera","tafo30fps","Akdogan","kirethh","ST0RMM"};int count=0;
+  for(Assets.Entry e:Assets.entries)if(e.group.equals("Dingiller")){require(e.name.equals(expected[count]),"Wrong pet name/order: "+e.name);require(e.id==(count>=10?41+count:38+count)&&e.slot.equals("companion"),"Unstable ID or slot");Models.Model model=Models.load(e);require(model.skinMini&&model.mini&&model.width==64&&model.height==64,"Skin rig flags/UV size wrong");for(String part:new String[]{"head","torso","left_arm","right_arm","left_leg","right_leg"})require(model.byName.get(part).faces.size()==12,e.name+" missing base or outer layer on "+part);float[] face=model.byName.get("head").faces.get(0);require(Math.abs(face[6]-.125)<.00001&&Math.abs(face[7]-.25)<.00001,"Head front UV does not match skin");Expr.Context c=new Expr.Context();c.speed=-2.5;c.time=0;model.activeAnimations=Models.active(model,c,true);Models.Bone leg=model.byName.get("left_leg");double[] start=Models.pose(model,leg,c,true,new HashMap<String,Models.Mat>(),0,0).point(1,1,0);c.time=.15;double[] end=Models.pose(model,leg,c,true,new HashMap<String,Models.Mat>(),0,0).point(1,1,0);require(gap(start,end)>.1,e.name+" walk animation static");count++;}
+  require(count==12&&Assets.groups[Assets.groups.length-1].equals("Dingiller"),"Missing new category/pets");System.out.println("PASS twelve exact names and stable IDs, Dingiller category, twelve skin layers per character, vanilla face UVs and animated walking");}
+}

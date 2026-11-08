@@ -1,0 +1,6 @@
+package akogen.fabric.v6;
+import java.nio.file.*;import java.util.*;
+public final class RunChecks {
+ static void require(boolean b,String s){if(!b)throw new AssertionError(s);}
+ public static void main(String[]a)throws Exception{Assets.Entry pet=new Assets.Entry();pet.group="Dingiller";double dt=1d/60;Follower.update(pet,0,0,0,0,dt);double start=pet.px;Follower.update(pet,10,0,0,0,dt);require(pet.running&&pet.px-start<dt*8.01,"Distant pet must run without snapping");for(int n=0;n<60;n++)Follower.update(pet,10,0,0,0,dt);require(pet.px-start>3.2,"Running pet does not catch up faster than walking");for(int n=0;n<600;n++)Follower.update(pet,10,0,0,n*5,dt);require(!pet.running&&pet.speed==0,"Pet keeps running while settled");Assets.load(Files.readAllBytes(Paths.get(a[0])));int count=0;for(Assets.Entry e:Assets.entries)if(e.group.equals("Dingiller")){Models.Model m=Models.load(e);Expr.Context c=new Expr.Context();c.running=true;c.speed=-6;List<String> active=Models.active(m,c,true);require(active.contains("run")&&!active.contains("walk"),"Run controller missing: "+e.name);c.running=false;require(Models.active(m,c,true).contains("walk"),"Walk controller missing");count++;}require(count==12,"Missing runner coverage");System.out.println("PASS distant pet accelerates and catches up, near/idle pet stops running, all twelve run/walk animation controllers");}
+}

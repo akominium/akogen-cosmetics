@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "akogen_cosmetics",
+  "version": "1.3.0-beta.7+mc1.21.11",
+  "name": "akogen",
+  "description": "Custom companions, headwear, cloaks, elytra textures and animated cosmetics. Press Home to open the wardrobe.",
+  "environment": "client",
+  "authors": [
+    "akogen"
+  ],
+  "entrypoints": {
+    "client": [
+      "akogen.fabric.v6.ModBootstrap"
+    ]
+  },
+  "mixins": [
+    "akogen.client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "1.21.11",
+    "java": ">=21",
+    "fabric-api": ">=0.141.4"
+  }
+}
